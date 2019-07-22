@@ -30,12 +30,12 @@ const GeyserType = new GraphQLObjectType({
                 id: { type: GraphQLString }
             },
             resolve: (geyser, args, {loaders}) =>
-                loaders.eruption.load(`/entries_latest/${geyser.id}`)
+                loaders.lastEruption.load(geyser.id)
         },
         prediction: {
             type: PredictionType,
             resolve: (geyser, args, {loaders}) =>
-                loaders.prediction.load(`/predictions_latest/${geyser.id}`)
+                loaders.prediction.load(geyser.id)
         }
     })
 })
@@ -90,7 +90,7 @@ const QueryType = new GraphQLObjectType({
                 id: { type: GraphQLString }
             },
             resolve: (root, args, {loaders}) =>
-                loaders.prediction.load(`/predictions_latest/${args.id}`)
+                loaders.prediction.load(args.id)
         },
         eruption: {
             type: EruptionType,
@@ -98,7 +98,7 @@ const QueryType = new GraphQLObjectType({
                 id: { type: GraphQLString }
             },
             resolve: (root, args, {loaders}) =>
-                loaders.eruption.load(`/entries_latest/${args.id}`)
+                loaders.lastEruption.load(args.id)
         }
     })
 })

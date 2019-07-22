@@ -23,7 +23,7 @@ let geysers = function(refresh = false, requiredID) {
         // Refresh if indicated OR geysers are not cached locally OR requiredID is not found in _geysers
         refresh = refresh || !_geysers || requiredID && !_geysers.find(geyser => geyser['id'] == requiredID);
 
-        // Resolve if geysers are cached locally and refresh is not necessary
+        // Resolve if refresh is not necessary
         if (!refresh) {
             resolve(_geysers);
             return;
@@ -44,14 +44,14 @@ function getGeyserByID(id) {
         .then(res => res.find(geyser => geyser['id'] == id))
 }
 
-function getEruptionByURL(relativeURL) {
-    return fetch(`${BASE_URL}${relativeURL}`)
+function getLastEruptionByGeyserID(id) {
+    return fetch(`${BASE_URL}/entries_latest/${id}`)
         .then(res => res.json())
         .then(json => json.entries.length ? json.entries[0] : null)
 }
 
-function getPredictionByURL(relativeURL) {
-    return fetch(`${BASE_URL}${relativeURL}`)
+function getPredictionByGeyserID(id) {
+    return fetch(`${BASE_URL}/predictions_latest/${id}`)
         .then(res => res.json())
         .then(json => json.predictions.length ? json.predictions[0] : null)
 }
@@ -63,17 +63,17 @@ app.use(graphqlHTTP(req => {
         keys => Promise.all(keys.map(getGeyserByID))
     )
     const predictionLoader = new DataLoader(
-        keys => Promise.all(keys.map(getPredictionByURL))
+        keys => Promise.all(keys.map(getPredictionByGeyserID))
     )
 
-    const eruptionLoader = new DataLoader(
-        keys => Promise.all(keys.map(getEruptionByURL))
+    const lastEruptionLoader = new DataLoader(
+        keys => Promise.all(keys.map(getLastEruptionByGeyserID))
     )
 
     const loaders = {
         geyser: geyserLoader,
         prediction: predictionLoader,
-        eruption: eruptionLoader
+        lastEruption: lastEruptionLoader
     }
     return {
         context: {loaders},
