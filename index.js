@@ -20,7 +20,7 @@ let _geysers;
 let geysers = function(refresh = false, requiredID) {
     return new Promise((resolve, reject) => {
 
-        // Refresh if indicated or geysers are not chacehd locally, or requiredID is not found in _geysers
+        // Refresh if indicated or geysers are not cached locally, or requiredID is not found in _geysers
         refresh = refresh || !_geysers || requiredID && !_geysers.find(geyser => geyser['id'] == requiredID);
 
         // Resolve if geysers are cached locally and refresh is not necessary
