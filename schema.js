@@ -28,7 +28,7 @@ const GeyserType = new GraphQLObjectType({
             resolve: (geyser, args, {loaders}) =>
                 loaders.eruption.load(`/entries_latest/${geyser.id}`)
         },
-        nextPrediction: {
+        prediction: {
             type: PredictionType,
             resolve: (geyser, args, {loaders}) =>
                 loaders.prediction.load(`/predictions_latest/${geyser.id}`)
