@@ -1,39 +1,47 @@
-import DataLoader from 'dataloader';
+//import DataLoader from 'dataloader';
+const DataLoader = require('dataloader');
 
-import express from 'express';
-import fetch from 'node-fetch';
-import graphqlHTTP from 'express-graphql';
-import schema from './schema';
+//import express from 'express';
+const express = require('express');
+
+//import fetch from 'node-fetch';
+const fetch = require('node-fetch');
+
+//import graphqlHTTP from 'express-graphql';
+const graphqlHTTP = require('express-graphql');
+
+//import schema from './schema';
+const schema = require('./schema');
 
 const BASE_URL = 'https://www.geysertimes.org/api/v5';
 
-let geysers;
+let _geysers;
 
-async function getGeysers(refresh = false) {
-    if (refresh || !geysers) {
-        console.log("Load");
-        geysers = await fetch(`${BASE_URL}/geysers`)
+let geysers = function(refresh = false, requiredID) {
+    return new Promise((resolve, reject) => {
+
+        // Refresh if indicated or geysers are not chacehd locally, or requiredID is not found in _geysers
+        refresh = refresh || !_geysers || requiredID && !_geysers.find(geyser => geyser['id'] == requiredID);
+
+        // Resolve if geysers are cached locally and refresh is not necessary
+        if (!refresh) {
+            resolve(_geysers);
+            return;
+        }
+
+        // Fetch geysers as last resort
+        fetch(`${BASE_URL}/geysers`)
             .then(res => res.json())
-            .then(json => json.geysers || [])
-            //.then(res => res)
-    }
+            .then(json => {
+                _geysers = json.geysers;
+                resolve(_geysers);
+            });
+    })
+};
 
-    return geysers;
-}
-
-async function getGeyserByID(id) {
-
-    geysers = await getGeysers();
-
-    let match = geysers.find(geyser => geyser['id'] == id);
-
-    if (match) {
-        return match;
-    }
-
-    geysers = await getGeysers(true);
-
-    return geysers.find(geyser => geyser['id'] == id);
+function getGeyserByID(id) {
+    return geysers(false, id)
+        .then(res => res.find(geyser => geyser['id'] == id))
 }
 
 function getEruptionByURL(relativeURL) {

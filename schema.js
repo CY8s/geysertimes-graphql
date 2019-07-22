@@ -1,10 +1,14 @@
-import fetch from 'node-fetch';
-
-import {
+/*import {
     GraphQLSchema,
     GraphQLObjectType,
     GraphQLString
-} from 'graphql'
+} from 'graphql'*/
+
+const {
+    GraphQLSchema,
+    GraphQLObjectType,
+    GraphQLString
+} = require('graphql');
 
 
 const GeyserType = new GraphQLObjectType({
@@ -99,6 +103,10 @@ const QueryType = new GraphQLObjectType({
     })
 })
 
-export default new GraphQLSchema({
+/*export default new GraphQLSchema({
     query: QueryType
-})
+})*/
+
+module.exports = new GraphQLSchema({
+    query: QueryType
+});
