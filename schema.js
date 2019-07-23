@@ -37,7 +37,7 @@ const GeyserType = new GraphQLObjectType({
                 }
             },
             resolve: (geyser, args, {loaders}) =>
-                loaders.recentEruptions.load({ id: geyser.id, range: args.range} )
+                loaders.recentEruptions.load({ id: geyser.id, range: args.range, offset: args.offset } )
                 
         },
         lastEruption: {
