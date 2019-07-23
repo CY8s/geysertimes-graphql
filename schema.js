@@ -7,7 +7,9 @@
 const {
     GraphQLSchema,
     GraphQLObjectType,
-    GraphQLString
+    GraphQLString,
+    GraphQLInt,
+    GraphQLList
 } = require('graphql');
 
 
@@ -24,11 +26,22 @@ const GeyserType = new GraphQLObjectType({
         longitude: {
             type: GraphQLString
         },
+        eruptions: {
+            type: GraphQLList(EruptionType),
+            args: {
+                range: {
+                    type: GraphQLInt
+                },
+                offset: {
+                    type: GraphQLInt
+                }
+            },
+            resolve: (geyser, args, {loaders}) =>
+                loaders.recentEruptions.load({ id: geyser.id, range: args.range} )
+                
+        },
         lastEruption: {
             type: EruptionType,
-            args: {
-                id: { type: GraphQLString }
-            },
             resolve: (geyser, args, {loaders}) =>
                 loaders.lastEruption.load(geyser.id)
         },

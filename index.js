@@ -50,6 +50,24 @@ function getLastEruptionByGeyserID(id) {
         .then(json => json.entries.length ? json.entries[0] : null)
 }
 
+function getRecentEruptions({ id, range, offset }) {
+    range = parseInt(range) || 24 * 60 * 60
+    offset = parseInt(offset) || 0;
+
+    let end = Math.floor((new Date).getTime() / 1000) - offset;
+    let start = end - range;
+
+    let endpoint = `${BASE_URL}/entries/${start}/${end}`;
+
+    if (id) {
+        endpoint += `/${id}`;
+    }
+
+    return fetch(endpoint)
+        .then(res => res.json())
+        .then(json => json.entries)
+}
+
 function getEruptionByID(id) {
     return fetch(`${BASE_URL}/entries/${id}`)
         .then(res => res.json())
@@ -71,6 +89,10 @@ app.use(graphqlHTTP(req => {
     const predictionLoader = new DataLoader(
         keys => Promise.all(keys.map(getPredictionByGeyserID))
     )
+    
+    const recentEruptionsLoader = new DataLoader(
+        keys => Promise.all(keys.map(getRecentEruptions))
+    )
 
     const lastEruptionLoader = new DataLoader(
         keys => Promise.all(keys.map(getLastEruptionByGeyserID))
@@ -84,6 +106,7 @@ app.use(graphqlHTTP(req => {
         geyser: geyserLoader,
         prediction: predictionLoader,
         eruption: eruptionLoader,
+        recentEruptions: recentEruptionsLoader,
         lastEruption: lastEruptionLoader
     }
     return {
