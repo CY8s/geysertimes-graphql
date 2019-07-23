@@ -50,6 +50,12 @@ function getLastEruptionByGeyserID(id) {
         .then(json => json.entries.length ? json.entries[0] : null)
 }
 
+function getEruptionByID(id) {
+    return fetch(`${BASE_URL}/entries/${id}`)
+        .then(res => res.json())
+        .then(json => json.entries.length ? json.entries[0] : null)
+}
+
 function getPredictionByGeyserID(id) {
     return fetch(`${BASE_URL}/predictions_latest/${id}`)
         .then(res => res.json())
@@ -70,9 +76,14 @@ app.use(graphqlHTTP(req => {
         keys => Promise.all(keys.map(getLastEruptionByGeyserID))
     )
 
+    const eruptionLoader = new DataLoader(
+        keys => Promise.all(keys.map(getEruptionByID))
+    )
+
     const loaders = {
         geyser: geyserLoader,
         prediction: predictionLoader,
+        eruption: eruptionLoader,
         lastEruption: lastEruptionLoader
     }
     return {

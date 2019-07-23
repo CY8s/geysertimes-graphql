@@ -45,8 +45,9 @@ const PredictionType = new GraphQLObjectType({
     description: '...',
     fields: () => ({
         geyser: {
-            type: GraphQLString,
-            resolve: prediction => prediction.geyserName
+            type: GeyserType,
+            resolve: (prediction, args, {loaders}) =>
+                loaders.geyser.load(prediction.geyserID)
         },
         time: {
             type: GraphQLString,
@@ -60,7 +61,9 @@ const EruptionType = new GraphQLObjectType({
     description: '...',
     fields: () => ({
         geyser: {
-            type: GraphQLString
+            type: GeyserType,
+            resolve: (prediction, args, {loaders}) =>
+                loaders.geyser.load(prediction.geyserID)
         },
         time: {
             type: GraphQLString
@@ -98,7 +101,7 @@ const QueryType = new GraphQLObjectType({
                 id: { type: GraphQLString }
             },
             resolve: (root, args, {loaders}) =>
-                loaders.lastEruption.load(args.id)
+                loaders.eruption.load(args.id)
         }
     })
 })
