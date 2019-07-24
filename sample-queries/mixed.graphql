@@ -1,0 +1,52 @@
+{
+  # Query for Old Faithful
+  geyser(id: "2") {
+    name
+    latitude
+    longitude
+    
+    # Alias Query as eruptions_1h
+    # Get Eruptions in last hour (3600 seconds)
+    eruptions_1h: eruptions(range: 3600) {
+      time
+      comment
+    }
+    
+    # Alias Query as eruptions_24h
+    # Get Eruptions in last (default) 24 hours
+    eruptions_24h: eruptions {
+      time
+      comment
+    }
+    
+    # Get the most recent Eruption
+    lastEruption {
+      time
+      comment
+    }
+    
+    # Get the next predicted Eruption
+    prediction {
+      time
+    }
+  }
+  
+  # Query for specific Morning eruption (id - 1112629)
+  eruption(id: "1112629") {
+    geyser {
+      name
+      latitude
+      longitude
+    }
+    time
+    comment
+  }
+  
+  # Query for next predicted Grand eruption
+  prediction(geyser: "13") {
+    geyser {
+      name
+    }
+    time
+  }
+}

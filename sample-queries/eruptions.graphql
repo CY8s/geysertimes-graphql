@@ -1,0 +1,29 @@
+{
+  # Alias Query as eruptions_2h
+  # Query for all eruptions in last 2 hours (7200 seconds)
+  eruptions_2hr: eruptions(range: 7200) {
+    geyser {
+      name
+    }
+    time
+    comment
+  }
+  
+  # Query for Beehive and Grand eruptions in last (default) 24 hours
+  eruptions(geysers: ["beehive", "13"]) {
+    geyser {
+      name
+    }
+    time
+    comment
+  }
+  
+  # Query for specific Morning eruption (id - 1112629)
+  eruption(id: "1112629") {
+    geyser {
+      name
+    }
+    time
+    comment
+  }
+}

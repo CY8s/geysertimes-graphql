@@ -1,0 +1,17 @@
+{
+  # Query list of predictions for Beehive, Daisy and Castle
+  predictions(geysers: ["1", "daisy", "castle"]) {
+    geyser {
+      name
+    }
+    time
+  }
+  
+  # Query for next predicted Grand eruption
+  prediction(geyser: "grand") {
+    geyser {
+      name
+    }
+    time
+  }
+}

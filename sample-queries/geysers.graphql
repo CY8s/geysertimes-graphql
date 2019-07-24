@@ -12,6 +12,13 @@
       comment
     }
     
+    # Alias Query as eruptions_1h_to_2h
+    # Get Eruptions in the prior hour (offset 3600 seconds)
+    eruptions_1h_to_2h: eruptions(range: 3600, offset: 3600) {
+      time
+      comment
+    }
+    
     # Alias Query as eruptions_24h
     # Get Eruptions in last (default) 24 hours
     eruptions_24h: eruptions {
@@ -29,24 +36,5 @@
     prediction {
       time
     }
-  }
-  
-  # Query for specific Morning eruption (id - 1112629)
-  eruption(id: "1112629") {
-    geyser {
-      name
-      latitude
-      longitude
-    }
-    time
-    comment
-  }
-  
-  # Query for next predicted Grand eruption
-  prediction(id: "13") {
-    geyser {
-      name
-    }
-    time
   }
 }
