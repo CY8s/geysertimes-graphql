@@ -74,6 +74,43 @@ function getEruptionByID(id) {
         .then(json => json.entries.length ? json.entries[0] : null)
 }
 
+function getPredictions({ userID, geysers }) {
+    let url = `${BASE_URL}/predictions_latest`
+    userID = parseInt(userID) || 44
+
+    if (geysers) {
+        geysers = geysers//.map(geyser => parseInt(geyser))
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .filter(geyser => geyser)
+
+        if (geysers.length) {
+            url += `/${geysers.join(';')}`
+        }
+    }
+
+    console.log(url);
+    
+    return fetch(url)
+        .then(res => res.json())
+        .then(json => json.predictions
+            .filter(prediction => prediction.userID == `${userID}`)
+            .sort((a, b) => {
+                let timeA = parseInt(a.prediction)
+                let timeB = parseInt(b.prediction)
+
+                if (timeA > timeB) {
+                    return 1
+                }
+
+                if (timeB < timeA) {
+                    return -1
+                }
+
+                return 0
+            })
+        )
+}
+
 function getPredictionByGeyserID(id) {
     return fetch(`${BASE_URL}/predictions_latest/${id}`)
         .then(res => res.json())
@@ -85,6 +122,10 @@ const app = express();
 app.use(graphqlHTTP(req => {
     const geyserLoader = new DataLoader(
         keys => Promise.all(keys.map(getGeyserByID))
+    )
+    
+    const predictionsLoader = new DataLoader(
+        keys => Promise.all(keys.map(getPredictions))
     )
     const predictionLoader = new DataLoader(
         keys => Promise.all(keys.map(getPredictionByGeyserID))
@@ -105,6 +146,7 @@ app.use(graphqlHTTP(req => {
     const loaders = {
         geyser: geyserLoader,
         prediction: predictionLoader,
+        predictions: predictionsLoader,
         eruption: eruptionLoader,
         recentEruptions: recentEruptionsLoader,
         lastEruption: lastEruptionLoader

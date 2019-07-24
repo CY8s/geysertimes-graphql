@@ -100,6 +100,20 @@ const QueryType = new GraphQLObjectType({
             resolve: (root, args, {loaders}) =>
                 loaders.geyser.load(args.id)
         },
+        predictions: {
+            type: GraphQLList(PredictionType),
+            args: {
+                userID: {
+                    type: GraphQLString,
+                    defaultValue: "44"
+                },
+                geysers: {
+                    type: new GraphQLList(GraphQLString)
+                }
+            },
+            resolve: (root, args, {loaders}) =>
+                loaders.predictions.load(args)
+        },
         prediction: {
             type: PredictionType,
             args: {
