@@ -50,22 +50,44 @@ function getLastEruptionByGeyserID(id) {
         .then(json => json.entries.length ? json.entries[0] : null)
 }
 
-function getRecentEruptions({ id, range, offset }) {
+function getRecentEruptions({ geysers, range, offset }) {
+    geysers = geysers || [];
     range = parseInt(range) || 24 * 60 * 60
     offset = parseInt(offset) || 0;
 
     let end = Math.floor((new Date).getTime() / 1000) - offset;
     let start = end - range;
 
-    let endpoint = `${BASE_URL}/entries/${start}/${end}`;
+    let url = `${BASE_URL}/entries/${start}/${end}`;
 
-    if (id) {
-        endpoint += `/${id}`;
+    geysers = geysers//.map(geyser => parseInt(geyser))
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .filter(geyser => geyser)
+
+    if (geysers.length) {
+        url += `/${geysers.join(';')}`
     }
 
-    return fetch(endpoint)
+    return fetch(url)
         .then(res => res.json())
-        .then(json => json.entries)
+        .then(json => json.entries
+            .filter(eruption => eruption.primaryID == eruption.eruptionID)
+            .sort((a, b) => {
+                let timeA = parseInt(a.time)
+                let timeB = parseInt(b.time)
+
+                if (timeA > timeB) {
+                    return 1
+                }
+
+                if (timeA < timeB) {
+                    return -1
+                }
+
+                return 0
+            })
+        )
+        
 }
 
 function getEruptionByID(id) {
@@ -87,8 +109,6 @@ function getPredictions({ userID, geysers }) {
             url += `/${geysers.join(';')}`
         }
     }
-
-    console.log(url);
     
     return fetch(url)
         .then(res => res.json())
@@ -102,7 +122,7 @@ function getPredictions({ userID, geysers }) {
                     return 1
                 }
 
-                if (timeB < timeA) {
+                if (timeA < timeB) {
                     return -1
                 }
 
@@ -135,12 +155,12 @@ app.use(graphqlHTTP(req => {
         keys => Promise.all(keys.map(getRecentEruptions))
     )
 
-    const lastEruptionLoader = new DataLoader(
-        keys => Promise.all(keys.map(getLastEruptionByGeyserID))
-    )
-
     const eruptionLoader = new DataLoader(
         keys => Promise.all(keys.map(getEruptionByID))
+    )
+
+    const lastEruptionLoader = new DataLoader(
+        keys => Promise.all(keys.map(getLastEruptionByGeyserID))
     )
 
     const loaders = {
