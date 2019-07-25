@@ -23,7 +23,15 @@ const geysers = function (refresh = false, requiredID) {
     refresh =
       refresh ||
       !_geysers ||
-      (requiredID && !_geysers.find(geyser => geyser['id'] == requiredID))
+      (requiredID &&
+        !_geysers.find(
+          geyser =>
+            geyser['id'] == requiredID ||
+            geyser['idString'] ==
+              String(requiredID)
+                .toLowerCase()
+                .replace(' ', '+')
+        ))
 
     // Resolve if refresh is not necessary
     if (!refresh) {
@@ -35,14 +43,26 @@ const geysers = function (refresh = false, requiredID) {
     fetch(`${BASE_URL}/geysers`)
       .then(res => res.json())
       .then(json => {
-        _geysers = json.geysers
+        _geysers = json.geysers.map(geyser => {
+          geyser['idString'] = geyser['name'].toLowerCase().replace(' ', '+')
+          return geyser
+        })
         resolve(_geysers)
       })
   })
 }
 
 function getGeyserByID (id) {
-  return geysers(false, id).then(res => res.find(geyser => geyser['id'] == id))
+  return geysers(false, id).then(res =>
+    res.find(
+      geyser =>
+        geyser['id'] == id ||
+        geyser['idString'] ==
+          String(id)
+            .toLowerCase()
+            .replace(' ', '+')
+    )
+  )
 }
 
 function getLastEruptionByGeyserID (id) {
