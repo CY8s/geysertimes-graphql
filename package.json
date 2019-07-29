@@ -1,6 +1,6 @@
 {
   "name": "geysertimes-graphql",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "GraphQL Resolver for GeyserTimes REST API",
   "engines": {
     "node": "12.4.0"
