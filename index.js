@@ -65,6 +65,12 @@ function getGeyserByID (id) {
   )
 }
 
+function getGeysersByID ({ ids }) {
+  return Promise.all(ids.map(id => getGeyserByID(id))).then(values =>
+    values.filter(value => !!value)
+  )
+}
+
 function getLastEruptionByGeyserID (id) {
   return fetch(`${BASE_URL}/entries_latest/${id}`)
     .then(res => res.json())
@@ -167,6 +173,10 @@ app.use(
       Promise.all(keys.map(getGeyserByID))
     )
 
+    const geysersLoader = new DataLoader(keys =>
+      Promise.all(keys.map(getGeysersByID))
+    )
+
     const predictionsLoader = new DataLoader(keys =>
       Promise.all(keys.map(getPredictions))
     )
@@ -188,6 +198,7 @@ app.use(
 
     const loaders = {
       geyser: geyserLoader,
+      geysers: geysersLoader,
       prediction: predictionLoader,
       predictions: predictionsLoader,
       eruption: eruptionLoader,

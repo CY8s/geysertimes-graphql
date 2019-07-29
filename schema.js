@@ -120,6 +120,15 @@ const QueryType = new GraphQLObjectType({
       },
       resolve: (root, args, { loaders }) => loaders.geyser.load(args.id)
     },
+    geysers: {
+      type: GraphQLList(GeyserType),
+      args: {
+        ids: {
+          type: new GraphQLList(GraphQLString)
+        }
+      },
+      resolve: (root, args, { loaders }) => loaders.geysers.load(args)
+    },
     predictions: {
       type: GraphQLList(PredictionType),
       args: {
