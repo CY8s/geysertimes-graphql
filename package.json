@@ -14,7 +14,7 @@
   "author": "Casey Yates",
   "license": "ISC",
   "dependencies": {
-    "geysertimes-graphql-core": "https://github.com/CY8s/geysertimes-graphql-core.git#v0.1.4",
+    "geysertimes-graphql-core": "https://github.com/CY8s/geysertimes-graphql-core.git#v0.2.0",
     "graphql": "^15.0.0",
     "nodemon": "^2.0.3"
   }
